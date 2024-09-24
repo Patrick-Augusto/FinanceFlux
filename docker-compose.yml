@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  couchbase:
+    image: couchbase:community
+    container_name: couchbase
+    ports:
+      - "8091-8094:8091-8094"
+      - "11210:11210"
+    environment:
+      - COUCHBASE_ADMIN_USERNAME=admin
+      - COUCHBASE_ADMIN_PASSWORD=password
+    volumes:
+      - ./data/couchbase:/opt/couchbase/var
+
+  app:
+    build: ./backend
+    container_name: investment_app
+    ports:
+      - "3000:3000"
+    environment:
+      - COUCHBASE_CONNECTION_STRING=couchbase://couchbase
+      - COUCHBASE_USERNAME=admin
+      - COUCHBASE_PASSWORD=password
+      - COUCHBASE_BUCKET=investment_portfolio
+    depends_on:
+      - couchbase
